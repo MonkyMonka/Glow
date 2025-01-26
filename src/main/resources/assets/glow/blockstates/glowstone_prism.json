@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "thickness=base": {
+      "model": "glow:block/glowstone_prism_base"
+    },
+    "thickness=middle": {
+      "model": "glow:block/glowstone_prism_middle"
+    },
+    "thickness=tip": {
+      "model": "glow:block/glowstone_prism_tip"
+    }
+  }
+}

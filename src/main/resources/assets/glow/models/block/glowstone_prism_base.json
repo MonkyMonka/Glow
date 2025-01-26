@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "glow:block/glowstone_prism_base_bottom",
+    "side": "glow:block/glowstone_prism_base_side",
+    "top": "glow:block/glowstone_prism_base_top"
+  }
+}

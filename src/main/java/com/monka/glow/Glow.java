@@ -1,5 +1,11 @@
 package com.monka.glow;
 
+import com.monka.glow.block.ModBlocks;
+import com.monka.glow.item.ModItems;
+import com.monka.glow.particle.GlowstoneParticle;
+import com.monka.glow.particle.ModParticles;
+import net.minecraft.client.particle.BubbleParticle;
+import net.minecraft.client.particle.BubblePopParticle;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -8,24 +14,25 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Glow.MODID)
 public class Glow
 {
-    // Define mod id in a common place for everything to reference
     public static final String MODID = "glow";
-    // Directly reference a slf4j logger
     public Glow(IEventBus modEventBus, ModContainer modContainer)
     {
 
-        modEventBus.addListener(this::commonSetup);
-
-
-
         NeoForge.EVENT_BUS.register(this);
+
+        ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
+        ModParticles.register(modEventBus);
+
+        modEventBus.addListener(ModItems::addCreative);
+        modEventBus.addListener(this::commonSetup);
 
     }
 
@@ -33,13 +40,11 @@ public class Glow
     {
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
     }
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
@@ -47,5 +52,13 @@ public class Glow
         public static void onClientSetup(FMLClientSetupEvent event)
         {
         }
+
+        @SubscribeEvent
+        public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+            event.registerSpriteSet(ModParticles.GLOWSTONE_DUST.get(), sprites
+                    -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                    -> new GlowstoneParticle(clientLevel, d, e, f, g, h, i, sprites));
+        }
     }
 }
+
