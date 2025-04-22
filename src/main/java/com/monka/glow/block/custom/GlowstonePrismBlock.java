@@ -107,11 +107,11 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     private static void spawnFallingPrism(BlockState state, ServerLevel level, BlockPos pos) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = pos.mutable();
 
-        for (BlockState blockstate = state; level.getBlockState(pos.below()).getBlock() != Blocks.AIR; blockstate = level.getBlockState(blockpos$mutableblockpos)) {
+        for(BlockState blockstate = state; blockstate.is(ModBlocks.GLOWSTONE_PRISM); blockstate = level.getBlockState(blockpos$mutableblockpos)) {
             FallingBlockEntity fallingblockentity = FallingBlockEntity.fall(level, blockpos$mutableblockpos, blockstate);
-            if (isTip(blockstate)) {
+            if (isTip(state)) {
                 int i = Math.max(1 + pos.getY() - blockpos$mutableblockpos.getY(), 6);
-                float f = 1.0F * (float) i;
+                float f = 1.0F * (float)i;
                 fallingblockentity.setHurtsEntities(f, 40);
                 break;
             }
