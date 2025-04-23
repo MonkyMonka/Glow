@@ -3,10 +3,13 @@ package com.monka.glow.block.custom;
 import com.monka.glow.Glow;
 import com.monka.glow.block.ModBlocks;
 import com.monka.glow.particle.ModParticles;
+import net.minecraft.client.renderer.entity.FallingBlockRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -17,6 +20,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -61,7 +65,8 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         }
 
         if (!canSurvive(state, level, pos)) {
-            if (!level.isClientSide()) spawnFallingPrism(state, (ServerLevel) level, pos);
+            if (!level.isClientSide())
+                spawnFallingPrism(state, (ServerLevel) level, pos);
             return state;
         }
 
@@ -161,7 +166,13 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
 
     @Override
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        return true;
+        return isValidGlowstonePrismPlacement(level, pos, Direction.DOWN);
+    }
+
+    private static boolean isValidGlowstonePrismPlacement(LevelReader level, BlockPos pos, Direction dir) {
+        BlockPos blockpos = pos.relative(dir.getOpposite());
+        BlockState blockstate = level.getBlockState(blockpos);
+        return blockstate.isFaceSturdy(level, blockpos, dir) || blockstate.is(ModBlocks.GLOWSTONE_PRISM);
     }
 
     private static boolean isTip(BlockState state) {
@@ -173,14 +184,18 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         }
     }
 
+    public DamageSource getFallDamageSource(Entity entity) {
+        return entity.damageSources().fallingBlock(entity);
+    }
+
     private static void spawnFallingPrism(BlockState state, ServerLevel level, BlockPos pos) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = pos.mutable();
 
-        for(BlockState blockstate = state; blockstate.is(ModBlocks.GLOWSTONE_PRISM); blockstate = level.getBlockState(blockpos$mutableblockpos)) {
-            FallingBlockEntity.fall(level, blockpos$mutableblockpos, blockstate);
+        for(BlockState blockstate = state; level.getBlockState(pos.below()).isAir() && blockstate.is(ModBlocks.GLOWSTONE_PRISM); blockstate = level.getBlockState(blockpos$mutableblockpos)) {
+            FallingBlockEntity fallingblockentity = FallingBlockEntity.fall(level, blockpos$mutableblockpos, blockstate);
+            fallingblockentity.dropItem = false;
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
-
     }
 
     public void onBrokenAfterFall(Level level, BlockPos pos, FallingBlockEntity fallingBlock) {
@@ -228,6 +243,10 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         } else {
             return BASE_SHAPE;
         }
+    }
+
+    protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
+        return false;
     }
 
     protected boolean isCollisionShapeFullBlock(BlockState state, BlockGetter level, BlockPos pos) {
