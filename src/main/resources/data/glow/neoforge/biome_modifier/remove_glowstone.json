@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "#c:is_nether",
+  "features": [
+    "minecraft:glowstone",
+    "minecraft:glowstone_extra"
+  ]
+}

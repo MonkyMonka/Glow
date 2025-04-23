@@ -4,6 +4,7 @@ import com.monka.glow.block.ModBlocks;
 import com.monka.glow.item.ModItems;
 import com.monka.glow.particle.GlowstoneParticle;
 import com.monka.glow.particle.ModParticles;
+import com.monka.glow.world.GlowFeatures;
 import net.minecraft.client.particle.BubbleParticle;
 import net.minecraft.client.particle.BubblePopParticle;
 import net.neoforged.api.distmarker.Dist;
@@ -30,6 +31,7 @@ public class Glow
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModParticles.register(modEventBus);
+        GlowFeatures.FEATURES.register(modEventBus);
 
         modEventBus.addListener(ModItems::addCreative);
         modEventBus.addListener(this::commonSetup);

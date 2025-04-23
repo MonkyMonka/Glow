@@ -26,13 +26,14 @@ public class ModBlocks {
 
     public static final DeferredBlock<Block> GLOWSTONE_PRISM = registerBlock("glowstone_prism",
             () -> new GlowstonePrismBlock(BlockBehaviour.Properties.of()
-                    .strength(4f).mapColor(MapColor.SAND).instrument(NoteBlockInstrument.PLING).strength(0.3F).sound(SoundType.GLASS).lightLevel((p_state) -> {
-                        return 15;
-                    }).isRedstoneConductor(ModBlocks::never)));
-
-    private static boolean never(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
-        return false;
-    }
+                    .mapColor(MapColor.SAND)
+                    .instrument(NoteBlockInstrument.PLING)
+                    .strength(0.3F)
+                    .sound(SoundType.GLASS)
+                    .lightLevel(state -> 15)
+                    .isRedstoneConductor((state, level, pos) -> false)
+            )
+    );
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);
