@@ -13,6 +13,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
 
 public class GlowstoneFeature extends Feature<NoneFeatureConfiguration> {
     public GlowstoneFeature(Codec<NoneFeatureConfiguration> codec) {
@@ -42,6 +45,7 @@ public class GlowstoneFeature extends Feature<NoneFeatureConfiguration> {
                         int height = random.nextInt(6) + 2;
                         if (!stateAbove.is(Blocks.NETHERRACK) && !stateAbove.is(Blocks.BASALT) && !stateAbove.is(Blocks.BLACKSTONE)) continue;
 
+                        ArrayList<BlockPos> blockPositions = new ArrayList<>();
                         BlockPos topPos = pos;
                         boolean startedPlacing = false;
                         for (int i = 0; i < height; i++) {
@@ -53,17 +57,13 @@ public class GlowstoneFeature extends Feature<NoneFeatureConfiguration> {
                                 continue;
                             }
 
-                            GlowstonePrismThickness glowstoneThickness = GlowstonePrismThickness.BASE;
-                            switch (height - i) {
-                                case 1 -> glowstoneThickness = GlowstonePrismThickness.TIP;
-                                case 2 -> glowstoneThickness = GlowstonePrismThickness.MIDDLE;
-                            }
-
-                            level.setBlock(glowstonePos, ModBlocks.GLOWSTONE_PRISM.get().defaultBlockState().setValue(GlowstonePrismBlock.THICKNESS, glowstoneThickness), 2);
+                            level.setBlock(glowstonePos, ModBlocks.GLOWSTONE_PRISM.get().defaultBlockState(), 3);
+                            blockPositions.add(glowstonePos);
                             startedPlacing = true;
                         }
 
-                        level.setBlock(topPos.above(), ModBlocks.GLOWSTONE_PRISM.get().defaultBlockState().setValue(GlowstonePrismBlock.THICKNESS, GlowstonePrismThickness.BASE), 2);
+                        GlowstonePrismBlock.applyThicknessGradient(level, blockPositions);
+                        if (startedPlacing) level.setBlock(topPos, ModBlocks.GLOWSTONE_PRISM.get().defaultBlockState().setValue(GlowstonePrismBlock.THICKNESS, GlowstonePrismThickness.BASE), 2);
                     }
                 }
             }
