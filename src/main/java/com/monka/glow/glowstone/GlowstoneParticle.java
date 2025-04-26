@@ -1,4 +1,4 @@
-package com.monka.glow.particle;
+package com.monka.glow.glowstone;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;

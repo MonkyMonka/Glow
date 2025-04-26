@@ -1,4 +1,4 @@
-package com.monka.glow.block.custom;
+package com.monka.glow.glowstone;
 
 import net.minecraft.util.StringRepresentable;
 

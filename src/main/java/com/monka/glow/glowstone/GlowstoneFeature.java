@@ -1,19 +1,15 @@
-package com.monka.glow.world;
+package com.monka.glow.glowstone;
 
 import com.mojang.serialization.Codec;
-import com.monka.glow.block.ModBlocks;
-import com.monka.glow.block.custom.GlowstonePrismBlock;
-import com.monka.glow.block.custom.GlowstonePrismThickness;
+import com.monka.glow.GlowRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
@@ -57,13 +53,13 @@ public class GlowstoneFeature extends Feature<NoneFeatureConfiguration> {
                                 continue;
                             }
 
-                            level.setBlock(glowstonePos, ModBlocks.GLOWSTONE_PRISM.get().defaultBlockState(), 3);
+                            level.setBlock(glowstonePos, GlowRegistry.GLOWSTONE_PRISM.get().defaultBlockState(), 3);
                             blockPositions.add(glowstonePos);
                             startedPlacing = true;
                         }
 
                         GlowstonePrismBlock.applyThicknessGradient(level, blockPositions);
-                        if (startedPlacing) level.setBlock(topPos, ModBlocks.GLOWSTONE_PRISM.get().defaultBlockState().setValue(GlowstonePrismBlock.THICKNESS, GlowstonePrismThickness.BASE), 2);
+                        if (startedPlacing) level.setBlock(topPos, GlowRegistry.GLOWSTONE_PRISM.get().defaultBlockState().setValue(GlowstonePrismBlock.THICKNESS, GlowstonePrismThickness.BASE), 2);
                     }
                 }
             }
