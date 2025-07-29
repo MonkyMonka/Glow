@@ -10,7 +10,7 @@ public enum GlowstonePrismThickness implements StringRepresentable {
     private final String name;
     private final int size;
 
-    private GlowstonePrismThickness(String name, int size) {
+    GlowstonePrismThickness(String name, int size) {
         this.name = name;
         this.size = size;
     }

@@ -19,13 +19,14 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 @Mod(Glow.MODID)
 public class Glow {
     public static final String MODID = "glow";
+
     public Glow(IEventBus modEventBus, ModContainer modContainer) {
         GlowRegistry.register(modEventBus);
 
-        modEventBus.addListener(this::addCreative);
+        modEventBus.addListener(Glow::addCreative);
     }
 
-    private void addCreative(final BuildCreativeModeTabContentsEvent event) {
+    public static void addCreative(final BuildCreativeModeTabContentsEvent event) {
         ResourceKey<CreativeModeTab> tab = event.getTabKey();
         ItemStack glowstone = Items.GLOWSTONE.getDefaultInstance();
         ItemStack glowstonePrism = GlowRegistry.GLOWSTONE_PRISM.asItem().getDefaultInstance();

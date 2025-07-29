@@ -17,17 +17,19 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
 public class GlowRegistry {
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Glow.MODID);
+
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Glow.MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Glow.MODID);
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, Glow.MODID);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, Glow.MODID);
 
-    public static final DeferredBlock<Block> GLOWSTONE_PRISM = registerBlockAndItem("glowstone_prism",
+    public static final DeferredBlock<Block> GLOWSTONE_PRISM = registerBlock("glowstone_prism",
             () -> new GlowstonePrismBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.SAND)
                     .instrument(NoteBlockInstrument.PLING)
@@ -44,15 +46,15 @@ public class GlowRegistry {
     public static final Supplier<Feature<NoneFeatureConfiguration>> GLOWSTONE = FEATURES.register("glowstone",
             () -> new GlowstoneFeature(NoneFeatureConfiguration.CODEC));
 
-    private static <T extends Block> DeferredBlock<T> registerBlockAndItem(String name, Supplier<T> block) {
+    private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);
-        ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+        ITEMS.register(name, () -> new BlockItem(toReturn.get(), new Item.Properties()));
         return toReturn;
     }
 
     public static void register(IEventBus bus) {
-        ITEMS.register(bus);
         BLOCKS.register(bus);
+        ITEMS.register(bus);
         PARTICLE_TYPES.register(bus);
         FEATURES.register(bus);
     }

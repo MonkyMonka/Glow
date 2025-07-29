@@ -145,9 +145,9 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
             BlockState state = level.getBlockState(mutablePos);
             if (!state.is(GlowRegistry.GLOWSTONE_PRISM)) break;
 
-            FallingBlockEntity fallingBlockEntity = FallingBlockEntity.fall(level, mutablePos, state);
-            fallingBlockEntity.setHurtsEntities(2, 40);
-            fallingBlockEntity.disableDrop();
+            FallingGlowstoneEntity fallingGlowstone = FallingGlowstoneEntity.fall(level, mutablePos, state);
+            fallingGlowstone.setHurtsEntities(2, 40);
+            fallingGlowstone.disableDrop();
 
             mutablePos.move(Direction.DOWN);
         }
@@ -165,11 +165,11 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (level instanceof ServerLevel serverLevel && random.nextFloat() < 0.05) {
-            if (random.nextBoolean() && level.isEmptyBlock(pos.below()))
+        if (level instanceof ServerLevel serverLevel) {
+            if (random.nextFloat() < 0.03 && level.isEmptyBlock(pos.below()))
                 level.setBlockAndUpdate(pos.below(), GlowRegistry.GLOWSTONE_PRISM.get().defaultBlockState());
 
-            if (level.getBlockState(pos.above()).is(GlowRegistry.GLOWSTONE_PRISM) && level.getBlockState(pos.above(2)).is(GlowRegistry.GLOWSTONE_PRISM))
+            if (random.nextFloat() < 0.01 && level.getBlockState(pos.above()).is(GlowRegistry.GLOWSTONE_PRISM) && level.getBlockState(pos.above(2)).is(GlowRegistry.GLOWSTONE_PRISM))
                 spawnFallingPrism(serverLevel, pos);
         }
     }
@@ -181,7 +181,7 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         }
 
         if (shouldFall(level, pos)) {
-            level.scheduleTick(pos, this, 1);
+            level.scheduleTick(pos, this, 2);
         } else applyThicknessGradient(level, getGlowstoneColumn(level, pos));
 
         return state;
@@ -200,6 +200,11 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (shouldFall(level, pos)) spawnFallingPrism(level, pos);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        level.scheduleTick(pos, this, 2);
     }
 
     public boolean shouldFall(LevelReader level, BlockPos pos) {
@@ -231,13 +236,12 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
             if (level instanceof ServerLevel serverLevel) {
                 double distance = Math.sqrt(pos.distSqr(fallingBlock.getStartPos()));
                 int size = fallingBlock.getBlockState().getValue(THICKNESS).getSize() + 1;
-                level.playSound(null, pos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, (float) distance / 4, (float) 5 / size);
-                level.playSound(null, pos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, (float) distance / 2, (float) 0.25 / size);
+                serverLevel.playSound(null, pos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, (float) size, (float) 5 / size);
+                serverLevel.playSound(null, pos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, (float) size, (float) 0.25 / size);
 
                 serverLevel.sendParticles(GlowRegistry.GLOWSTONE_DUST.get(), pos.getX() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), pos.getY() + 1 + level.random.nextFloat() - level.random.nextFloat(), pos.getZ() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), (int) (distance * 25 * size * level.random.nextFloat()), 0, 0, 0, 0.25 * size * level.random.nextFloat());
                 serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, pos.getX() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), pos.getY() + level.random.nextFloat() - level.random.nextFloat() + 1, pos.getZ() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), (int) (distance * 25 * size * level.random.nextFloat()), 0, 0, 0, 0.1 * size * level.random.nextFloat());
-                serverLevel.sendParticles(ParticleTypes.FLASH, pos.getX() + level.random.nextFloat() - level.random.nextFloat() + 0.5, pos.getY() + level.random.nextFloat() - level.random.nextFloat() + 1, pos.getZ() + level.random.nextFloat() - level.random.nextFloat() + 0.5, 1, 0, 0, 0, 0);
-
+                if (size > 1) serverLevel.sendParticles(ParticleTypes.FLASH, pos.getX() + level.random.nextFloat() - level.random.nextFloat() + 0.5, pos.getY() + level.random.nextFloat() - level.random.nextFloat() + 1, pos.getZ() + level.random.nextFloat() - level.random.nextFloat() + 0.5, 1, 0, 0, 0, 0);
             }
         }
     }
@@ -265,11 +269,6 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     @Override
     protected FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
-    }
-
-    @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        level.scheduleTick(pos, this, 1);
     }
 
     @Override
