@@ -88,7 +88,7 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     private static void updateIfNeeded(LevelAccessor level, BlockPos pos, GlowstonePrismThickness thickness) {
         BlockState state = level.getBlockState(pos);
 
-        if (state.is(GlowRegistry.GLOWSTONE_PRISM) && state.getValue(GlowstonePrismBlock.THICKNESS) != thickness)
+        if (state.is(GlowRegistry.GLOWSTONE_PRISM.get()) && state.getValue(GlowstonePrismBlock.THICKNESS) != thickness)
             level.setBlock(pos, state.setValue(GlowstonePrismBlock.THICKNESS, thickness), 3);
     }
 
@@ -97,11 +97,11 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         int originY = origin.getY();
 
         int minY = originY;
-        while (level.getBlockState(mutablePos.set(origin.getX(), minY - 1, origin.getZ())).is(GlowRegistry.GLOWSTONE_PRISM))
+        while (level.getBlockState(mutablePos.set(origin.getX(), minY - 1, origin.getZ())).is(GlowRegistry.GLOWSTONE_PRISM.get()))
             minY--;
 
         int maxY = originY;
-        while (level.getBlockState(mutablePos.set(origin.getX(), maxY + 1, origin.getZ())).is(GlowRegistry.GLOWSTONE_PRISM))
+        while (level.getBlockState(mutablePos.set(origin.getX(), maxY + 1, origin.getZ())).is(GlowRegistry.GLOWSTONE_PRISM.get()))
             maxY++;
 
 
@@ -143,7 +143,7 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
 
         while (true) {
             BlockState state = level.getBlockState(mutablePos);
-            if (!state.is(GlowRegistry.GLOWSTONE_PRISM)) break;
+            if (!state.is(GlowRegistry.GLOWSTONE_PRISM.get())) break;
 
             FallingGlowstoneEntity fallingGlowstone = FallingGlowstoneEntity.fall(level, mutablePos, state);
             fallingGlowstone.setHurtsEntities(2, 40);
@@ -159,23 +159,24 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     }
 
     @Override
-    protected boolean isRandomlyTicking(BlockState state) {
+    public boolean isRandomlyTicking(BlockState state) {
         return true;
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (level instanceof ServerLevel serverLevel) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (level instanceof ServerLevel) {
+            ServerLevel serverLevel = level;
             if (random.nextFloat() < 0.03 && level.isEmptyBlock(pos.below()))
                 level.setBlockAndUpdate(pos.below(), GlowRegistry.GLOWSTONE_PRISM.get().defaultBlockState());
 
-            if (random.nextFloat() < 0.01 && level.getBlockState(pos.above()).is(GlowRegistry.GLOWSTONE_PRISM) && level.getBlockState(pos.above(2)).is(GlowRegistry.GLOWSTONE_PRISM))
+            if (random.nextFloat() < 0.01 && level.getBlockState(pos.above()).is(GlowRegistry.GLOWSTONE_PRISM.get()) && level.getBlockState(pos.above(2)).is(GlowRegistry.GLOWSTONE_PRISM.get()))
                 spawnFallingPrism(serverLevel, pos);
         }
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
@@ -188,22 +189,22 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     }
 
     @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+    public void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
         if (level instanceof ServerLevel serverLevel) {
             BlockPos pos = hit.getBlockPos();
-            if (projectile.mayInteract(level, pos) && projectile.mayBreak(level) && projectile.getDeltaMovement().length() > 0.6) {
+            if (projectile.mayInteract(level, pos) && projectile.getDeltaMovement().length() > 0.6) {
                 spawnFallingPrism(serverLevel, pos);
             }
         }
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (shouldFall(level, pos)) spawnFallingPrism(level, pos);
     }
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         level.scheduleTick(pos, this, 2);
     }
 
@@ -211,8 +212,8 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         List<BlockPos> column = getGlowstoneColumn(level, pos);
         if (column.isEmpty() || !column.contains(pos)) return true;
 
-        BlockPos end1 = column.getFirst();
-        BlockPos end2 = column.getLast();
+        BlockPos end1 = column.get(0);
+        BlockPos end2 = column.get((column.size() - 1));
 
         BlockPos bottom = end1.getY() <= end2.getY() ? end1 : end2;
         BlockPos top = end1.getY() > end2.getY() ? end1 : end2;
@@ -267,12 +268,12 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         GlowstonePrismThickness glowstonePrismThickness = state.getValue(THICKNESS);
 
         if (glowstonePrismThickness == GlowstonePrismThickness.TIP) {
@@ -284,7 +285,6 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         }
     }
 
-    @Override
     protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         return false;
     }

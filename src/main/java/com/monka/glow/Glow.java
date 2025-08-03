@@ -6,15 +6,13 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.common.Mod;
 
 @Mod(Glow.MODID)
 public class Glow {
@@ -29,19 +27,19 @@ public class Glow {
     public static void addCreative(final BuildCreativeModeTabContentsEvent event) {
         ResourceKey<CreativeModeTab> tab = event.getTabKey();
         ItemStack glowstone = Items.GLOWSTONE.getDefaultInstance();
-        ItemStack glowstonePrism = GlowRegistry.GLOWSTONE_PRISM.asItem().getDefaultInstance();
+        ItemStack glowstonePrism = GlowRegistry.GLOWSTONE_PRISM.get().asItem().getDefaultInstance();
         CreativeModeTab.TabVisibility parentAndSearchTabs = CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
 
         if (tab == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            event.insertAfter(glowstone, glowstonePrism, parentAndSearchTabs);
+            event.accept(glowstonePrism);
         }
 
         if (tab == CreativeModeTabs.NATURAL_BLOCKS) {
-            event.insertAfter(glowstone, glowstonePrism, parentAndSearchTabs);
+            event.accept(glowstonePrism);
         }
     }
 
-    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientEvents {
 
         @SubscribeEvent

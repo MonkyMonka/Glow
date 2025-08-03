@@ -3,8 +3,8 @@ package com.monka.glow.glowstone;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class GlowstoneParticle extends SimpleAnimatedParticle {
@@ -25,10 +25,10 @@ public class GlowstoneParticle extends SimpleAnimatedParticle {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class Provider implements ParticleProvider<SimpleParticleType> {
+    public static class Factory implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 
-        public Provider(SpriteSet sprites) {
+        public Factory(SpriteSet sprites) {
             this.sprites = sprites;
         }
 
