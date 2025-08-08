@@ -285,7 +285,8 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         }
     }
 
-    protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
+    @Override
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType pathComputationType) {
         return false;
     }
 }
