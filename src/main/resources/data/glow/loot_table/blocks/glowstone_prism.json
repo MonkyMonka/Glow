@@ -35,7 +35,7 @@
                   "add": false,
                   "count": {
                     "type": "minecraft:uniform",
-                    "max": 4,
+                    "max": 3,
                     "min": 2
                   },
                   "function": "minecraft:set_count"
@@ -51,7 +51,7 @@
                 {
                   "function": "minecraft:limit_count",
                   "limit": {
-                    "max": 4,
+                    "max": 3,
                     "min": 1
                   }
                 },
