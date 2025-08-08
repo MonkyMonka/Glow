@@ -13,12 +13,14 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Glow.MODID)
 public class Glow {
     public static final String MODID = "glow";
 
-    public Glow(IEventBus modEventBus, ModContainer modContainer) {
+    public Glow(FMLJavaModLoadingContext context) {
+        IEventBus modEventBus = context.getModEventBus();
         GlowRegistry.register(modEventBus);
 
         modEventBus.addListener(Glow::addCreative);
@@ -26,7 +28,6 @@ public class Glow {
 
     public static void addCreative(final BuildCreativeModeTabContentsEvent event) {
         ResourceKey<CreativeModeTab> tab = event.getTabKey();
-        ItemStack glowstone = Items.GLOWSTONE.getDefaultInstance();
         ItemStack glowstonePrism = GlowRegistry.GLOWSTONE_PRISM.get().asItem().getDefaultInstance();
         CreativeModeTab.TabVisibility parentAndSearchTabs = CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
 
