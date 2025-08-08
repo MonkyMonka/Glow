@@ -193,6 +193,7 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         if (level instanceof ServerLevel serverLevel) {
             BlockPos pos = hit.getBlockPos();
             if (projectile.mayInteract(level, pos) && projectile.getDeltaMovement().length() > 0.6) {
+                level.destroyBlock(pos, true);
                 spawnFallingPrism(serverLevel, pos);
             }
         }
