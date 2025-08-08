@@ -1,6 +1,6 @@
 {
   "type": "forge:add_features",
-  "biomes": "#c:is_nether",
+  "biomes": "#minecraft:is_nether",
   "features": "glow:glowstone",
   "step": "underground_decoration"
 }

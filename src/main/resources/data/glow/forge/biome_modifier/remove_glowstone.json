@@ -1,6 +1,6 @@
 {
   "type": "forge:remove_features",
-  "biomes": "#c:is_nether",
+  "biomes": "#minecraft:is_nether",
   "features": [
     "minecraft:glowstone",
     "minecraft:glowstone_extra"
