@@ -28,15 +28,16 @@ public class Glow {
 
     public static void addCreative(final BuildCreativeModeTabContentsEvent event) {
         ResourceKey<CreativeModeTab> tab = event.getTabKey();
+        ItemStack glowstone = Items.GLOWSTONE.getDefaultInstance();
         ItemStack glowstonePrism = GlowRegistry.GLOWSTONE_PRISM.get().asItem().getDefaultInstance();
         CreativeModeTab.TabVisibility parentAndSearchTabs = CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
 
         if (tab == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            event.accept(glowstonePrism);
+            event.getEntries().putAfter(glowstone,glowstonePrism,parentAndSearchTabs);
         }
 
         if (tab == CreativeModeTabs.NATURAL_BLOCKS) {
-            event.accept(glowstonePrism);
+            event.getEntries().putAfter(glowstone,glowstonePrism,parentAndSearchTabs);
         }
     }
 
