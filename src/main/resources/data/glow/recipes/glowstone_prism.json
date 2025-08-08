@@ -8,11 +8,12 @@
   },
   "pattern": [
     "#",
+    "#",
     "#"
   ],
   "result": {
-    "count": 3,
-    "id": "glow:glowstone_prism"
-  }
+    "item": "glow:glowstone_prism",
+    "count": 1
+  },
+  "show_notification": true
 }
-
