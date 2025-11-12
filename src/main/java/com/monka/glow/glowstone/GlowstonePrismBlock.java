@@ -236,8 +236,8 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
             if (level instanceof ServerLevel serverLevel) {
                 double distance = Math.sqrt(pos.distSqr(fallingBlock.getStartPos()));
                 int size = fallingBlock.getBlockState().getValue(THICKNESS).getSize() + 1;
-                serverLevel.playSound(null, pos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, (float) size, (float) 5 / size);
-                serverLevel.playSound(null, pos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, (float) size, (float) 0.25 / size);
+                serverLevel.playSound(null, pos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, (float) size / 2, (float) 5 / size);
+                serverLevel.playSound(null, pos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, (float) size / 2, (float) 0.25 / size);
 
                 serverLevel.sendParticles(GlowRegistry.GLOWSTONE_DUST.get(), pos.getX() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), pos.getY() + 1 + level.random.nextFloat() - level.random.nextFloat(), pos.getZ() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), (int) (distance * 25 * size * level.random.nextFloat()), 0, 0, 0, 0.25 * size * level.random.nextFloat());
                 serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, pos.getX() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), pos.getY() + level.random.nextFloat() - level.random.nextFloat() + 1, pos.getZ() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), (int) (distance * 25 * size * level.random.nextFloat()), 0, 0, 0, 0.1 * size * level.random.nextFloat());
