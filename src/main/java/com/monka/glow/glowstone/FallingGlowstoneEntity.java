@@ -30,6 +30,7 @@ public class FallingGlowstoneEntity extends FallingBlockEntity {
         this.setStartPos(this.blockPosition());
     }
 
+
     @Override
     public void tick() {
         if (level() instanceof ServerLevel serverLevel) {

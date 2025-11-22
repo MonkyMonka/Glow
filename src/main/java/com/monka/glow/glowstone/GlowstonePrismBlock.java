@@ -33,11 +33,12 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     public static final VoxelShape MIDDLE_SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
     public static final VoxelShape TIP_SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final BooleanProperty NATURALLY_BROKEN = BooleanProperty.create("naturallybroken");
     public static final EnumProperty<GlowstonePrismThickness> THICKNESS = EnumProperty.create("thickness", GlowstonePrismThickness.class);
 
     public GlowstonePrismBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(THICKNESS, GlowstonePrismThickness.TIP).setValue(WATERLOGGED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(THICKNESS, GlowstonePrismThickness.TIP).setValue(WATERLOGGED, false).setValue(NATURALLY_BROKEN, false));
     }
 
     public static void applyThicknessGradient(LevelAccessor level, List<BlockPos> column) {
@@ -155,7 +156,7 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(THICKNESS, WATERLOGGED);
+        builder.add(THICKNESS, WATERLOGGED, NATURALLY_BROKEN);
     }
 
     @Override
@@ -169,8 +170,10 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
             if (random.nextFloat() < 0.03 && level.isEmptyBlock(pos.below()))
                 level.setBlockAndUpdate(pos.below(), GlowRegistry.GLOWSTONE_PRISM.get().defaultBlockState());
 
-            if (random.nextFloat() < 0.01 && level.getBlockState(pos.above()).is(GlowRegistry.GLOWSTONE_PRISM) && level.getBlockState(pos.above(2)).is(GlowRegistry.GLOWSTONE_PRISM))
+            if (random.nextFloat() < 0.01 && level.getBlockState(pos.above()).is(GlowRegistry.GLOWSTONE_PRISM) && level.getBlockState(pos.above(2)).is(GlowRegistry.GLOWSTONE_PRISM)) {
+                level.setBlock(pos, state.setValue(GlowstonePrismBlock.NATURALLY_BROKEN, true), 3);
                 spawnFallingPrism(serverLevel, pos);
+            }
         }
     }
 
@@ -235,7 +238,8 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         if (!fallingBlock.isSilent()) {
             if (level instanceof ServerLevel serverLevel) {
 
-                dropResources(fallingBlock.getBlockState(), level, pos);
+                if (!fallingBlock.getBlockState().getValue(NATURALLY_BROKEN))
+                    dropResources(fallingBlock.getBlockState(), level, pos);
 
                 double distance = Math.sqrt(pos.distSqr(fallingBlock.getStartPos()));
                 int size = fallingBlock.getBlockState().getValue(THICKNESS).getSize() + 1;
