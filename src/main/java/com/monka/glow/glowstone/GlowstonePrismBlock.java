@@ -234,6 +234,9 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
     public void onBrokenAfterFall(Level level, BlockPos pos, FallingBlockEntity fallingBlock) {
         if (!fallingBlock.isSilent()) {
             if (level instanceof ServerLevel serverLevel) {
+
+                dropResources(fallingBlock.getBlockState(), level, pos);
+
                 double distance = Math.sqrt(pos.distSqr(fallingBlock.getStartPos()));
                 int size = fallingBlock.getBlockState().getValue(THICKNESS).getSize() + 1;
                 serverLevel.playSound(null, pos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, (float) size / 2, (float) 5 / size);
@@ -241,7 +244,8 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
 
                 serverLevel.sendParticles(GlowRegistry.GLOWSTONE_DUST.get(), pos.getX() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), pos.getY() + 1 + level.random.nextFloat() - level.random.nextFloat(), pos.getZ() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), (int) (distance * 25 * size * level.random.nextFloat()), 0, 0, 0, 0.25 * size * level.random.nextFloat());
                 serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, pos.getX() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), pos.getY() + level.random.nextFloat() - level.random.nextFloat() + 1, pos.getZ() + 0.5 + level.random.nextFloat() - level.random.nextFloat(), (int) (distance * 25 * size * level.random.nextFloat()), 0, 0, 0, 0.1 * size * level.random.nextFloat());
-                if (size > 1) serverLevel.sendParticles(ParticleTypes.FLASH, pos.getX() + level.random.nextFloat() - level.random.nextFloat() + 0.5, pos.getY() + level.random.nextFloat() - level.random.nextFloat() + 1, pos.getZ() + level.random.nextFloat() - level.random.nextFloat() + 0.5, 1, 0, 0, 0, 0);
+                if (size > 1)
+                    serverLevel.sendParticles(ParticleTypes.FLASH, pos.getX() + level.random.nextFloat() - level.random.nextFloat() + 0.5, pos.getY() + level.random.nextFloat() - level.random.nextFloat() + 1, pos.getZ() + level.random.nextFloat() - level.random.nextFloat() + 0.5, 1, 0, 0, 0, 0);
             }
         }
     }
