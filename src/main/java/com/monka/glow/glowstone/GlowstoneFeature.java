@@ -46,6 +46,8 @@ public class GlowstoneFeature extends Feature<NoneFeatureConfiguration> {
                         boolean startedPlacing = false;
                         for (int i = 0; i < height; i++) {
                             BlockPos glowstonePos = pos.below(i);
+                            BlockState posState = level.getBlockState((glowstonePos));
+                            if (!posState.is(Blocks.NETHERRACK) && !posState.is(Blocks.BASALT) && !posState.is(Blocks.BLACKSTONE) && !posState.isEmpty() ) continue;
 
                             if (!level.isEmptyBlock(glowstonePos)) {
                                 if (startedPlacing) break;
