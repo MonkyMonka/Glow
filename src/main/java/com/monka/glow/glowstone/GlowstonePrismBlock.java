@@ -138,14 +138,14 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         return column;
     }
 
-    public static void spawnFallingPrism(ServerLevel level, BlockPos origin) {
+    public static void spawnFallingPrism(ServerLevel level, BlockPos origin, boolean isNatural) {
         BlockPos.MutableBlockPos mutablePos = origin.mutable();
 
         while (true) {
             BlockState state = level.getBlockState(mutablePos);
             if (!state.is(GlowRegistry.GLOWSTONE_PRISM)) break;
 
-            FallingGlowstoneEntity fallingGlowstone = FallingGlowstoneEntity.fall(level, mutablePos, state);
+            FallingGlowstoneEntity fallingGlowstone = FallingGlowstoneEntity.fall(level, mutablePos, state, isNatural);
             fallingGlowstone.setHurtsEntities(2, 40);
             fallingGlowstone.disableDrop();
 
@@ -170,7 +170,7 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
                 level.setBlockAndUpdate(pos.below(), GlowRegistry.GLOWSTONE_PRISM.get().defaultBlockState());
 
             if (random.nextFloat() < 0.01 && level.getBlockState(pos.above()).is(GlowRegistry.GLOWSTONE_PRISM) && level.getBlockState(pos.above(2)).is(GlowRegistry.GLOWSTONE_PRISM))
-                spawnFallingPrism(serverLevel, pos);
+                spawnFallingPrism(serverLevel, pos, true);
         }
     }
 
@@ -192,14 +192,14 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         if (level instanceof ServerLevel serverLevel) {
             BlockPos pos = hit.getBlockPos();
             if (projectile.mayInteract(level, pos) && projectile.mayBreak(level) && projectile.getDeltaMovement().length() > 0.6) {
-                spawnFallingPrism(serverLevel, pos);
+                spawnFallingPrism(serverLevel, pos, false);
             }
         }
     }
 
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (shouldFall(level, pos)) spawnFallingPrism(level, pos);
+        if (shouldFall(level, pos)) spawnFallingPrism(level, pos, true);
     }
 
     @Override
@@ -235,7 +235,15 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         if (!fallingBlock.isSilent()) {
             if (level instanceof ServerLevel serverLevel) {
 
-                dropResources(fallingBlock.getBlockState(), level, pos);
+                boolean isNatural = true;
+                if ( fallingBlock instanceof FallingGlowstoneEntity)
+                {
+                    FallingGlowstoneEntity fallingGlowstone = (FallingGlowstoneEntity) fallingBlock;
+                    isNatural = fallingGlowstone.isNatural;
+                }
+
+                if (!isNatural)
+                    dropResources(fallingBlock.getBlockState(), level, pos);
 
                 double distance = Math.sqrt(pos.distSqr(fallingBlock.getStartPos()));
                 int size = fallingBlock.getBlockState().getValue(THICKNESS).getSize() + 1;

@@ -13,12 +13,13 @@ import net.minecraft.world.phys.Vec3;
 
 public class FallingGlowstoneEntity extends FallingBlockEntity {
 
+    public boolean isNatural = true;
 
     public FallingGlowstoneEntity(EntityType<? extends FallingBlockEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    private FallingGlowstoneEntity(Level level, double x, int y, double z, BlockState blockState) {
+    private FallingGlowstoneEntity(Level level, double x, int y, double z, BlockState blockState, boolean isNatural) {
         this(EntityType.FALLING_BLOCK, level);
         this.blockState = blockState;
         this.blocksBuilding = true;
@@ -28,6 +29,7 @@ public class FallingGlowstoneEntity extends FallingBlockEntity {
         this.yo = y;
         this.zo = z;
         this.setStartPos(this.blockPosition());
+        this.isNatural = isNatural;
     }
 
     @Override
@@ -43,8 +45,8 @@ public class FallingGlowstoneEntity extends FallingBlockEntity {
         super.tick();
     }
 
-    public static FallingGlowstoneEntity fall(Level level, BlockPos pos, BlockState state) {
-        FallingGlowstoneEntity fallingGlowstone = new FallingGlowstoneEntity(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, state.hasProperty(BlockStateProperties.WATERLOGGED) ? state.setValue(BlockStateProperties.WATERLOGGED, false) : state);
+    public static FallingGlowstoneEntity fall(Level level, BlockPos pos, BlockState state, boolean isNatural) {
+        FallingGlowstoneEntity fallingGlowstone = new FallingGlowstoneEntity(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, state.hasProperty(BlockStateProperties.WATERLOGGED) ? state.setValue(BlockStateProperties.WATERLOGGED, false) : state, isNatural);
         level.setBlockAndUpdate(pos, state.getFluidState().createLegacyBlock());
         level.addFreshEntity(fallingGlowstone);
         return fallingGlowstone;
