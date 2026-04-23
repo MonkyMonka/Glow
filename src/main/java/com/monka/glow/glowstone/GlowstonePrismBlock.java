@@ -12,6 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
@@ -27,6 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterloggedBlock {
     public static final VoxelShape BASE_SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
@@ -185,6 +187,13 @@ public class GlowstonePrismBlock extends Block implements Fallable, SimpleWaterl
         } else applyThicknessGradient(level, getGlowstoneColumn(level, pos));
 
         return state;
+    }
+
+    @Override
+    protected void onExplosionHit(BlockState state, Level level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
+        if (explosion.canTriggerBlocks()) {
+            spawnFallingPrism((ServerLevel) level, pos, false);
+        }
     }
 
     @Override
